@@ -80,8 +80,11 @@ namespace Bertie.SNBT.Parser.Convert {
         }
 
         public R Convert<R>(object value) {
-            Registry[value.GetType()][typeof(R)].TryConvertGeneric(value, out var result);
-            return (R)result;
+            if (TryConvert(value, out R result)) {
+                return result;
+            } else {
+                throw new InvalidCastException($"Could not convert {value} from {value.GetType().FullName} to {typeof(R).FullName}");
+            }
         }
 
         public bool TryConvert<R>(object value, out R result) {

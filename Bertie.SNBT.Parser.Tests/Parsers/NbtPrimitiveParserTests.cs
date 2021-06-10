@@ -6,6 +6,13 @@ using Xunit;
 namespace Bertie.SNBT.Parser.Tests.Parsers {
     public class NbtPrimitiveParserTests {
         [Fact]
+        public void EmptyStringThrowsError() {
+            int pos = 0;
+            string nbt = @"    ";
+            Assert.Throws<ArgumentException>(() => new NbtPrimitiveParser().Parse(nbt, ref pos));
+        }
+
+        [Fact]
         public void QuotedReturnsString() {
             int pos = 0;
             string nbt = @"""4""";

@@ -36,12 +36,20 @@ namespace Bertie.SNBT.Parser.NBT {
         public abstract bool TryValueAs<R>(out R result);
 
         /// <summary>
-        /// Returns the value as <typeparamref name="R"/> or throws <see cref="InvalidOperationException"/>.
+        /// Returns the value as <typeparamref name="R"/> or throws <see cref="InvalidCastException"/>.
         /// </summary>
         /// <typeparam name="R">The type to return the value as.</typeparam>
-        /// <exception cref="InvalidOperationException">Thrown if the value cannot be converted.</exception>
+        /// <exception cref="InvalidCastException">Thrown if the value cannot be converted.</exception>
         /// <returns>Returns <typeparamref name="R"/> if possible.</returns>
         public abstract R ValueAs<R>();
+
+        /// <summary>
+        /// Checks if the internal value equals another value, converting the internal value to the specified type first.
+        /// </summary>
+        /// <typeparam name="R">The type to use when making the comparison.</typeparam>
+        /// <param name="value">The other value to compare with.</param>
+        /// <returns>Returns true if the internal value can be converted to <typeparamref name="R"/> and equals the given value.</returns>
+        public abstract bool ValueEquals<R>(R value);
     }
 
     /// <summary>
@@ -66,7 +74,7 @@ namespace Bertie.SNBT.Parser.NBT {
             } else {
                 return Converter.Default.Convert<R>(RawValue);
             }
-            throw new InvalidOperationException($"Could not return value of type {typeof(T).Name} as {typeof(R).Name}");
+            throw new InvalidCastException($"Could not return value of type {typeof(T).Name} as {typeof(R).Name}");
         }
 
         public override bool TryValueAs<R>(out R result) {
@@ -76,6 +84,10 @@ namespace Bertie.SNBT.Parser.NBT {
             } else {
                 return Converter.Default.TryConvert(RawValue, out result);
             }
+        }
+
+        public override bool ValueEquals<R>(R value) {
+            return TryValueAs(out R internalValue) && internalValue.Equals(value);
         }
     }
 }

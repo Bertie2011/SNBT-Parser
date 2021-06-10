@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 
 namespace Bertie.SNBT.Parser.Parsers {
-    public class NbtPrimitiveParser : IStringParser<NbtPrimitive> {
+    public class NbtPrimitiveParser : StringParser<NbtPrimitive> {
         private static readonly char[] allowedUnquoted = new char[] {
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -22,7 +22,7 @@ namespace Bertie.SNBT.Parser.Parsers {
         /// <param name="nbt">The stringified nbt to parse.</param>
         /// <param name="pos">The starting position.</param>
         /// <returns>Returns the parsed primitive</returns>
-        public NbtPrimitive Parse(string nbt, ref int pos) {
+        public override NbtPrimitive Parse(string nbt, ref int pos) {
             char? quote = null;
             bool escape = false;
             bool quoteEnd = false;
@@ -56,7 +56,9 @@ namespace Bertie.SNBT.Parser.Parsers {
             if (pos == nbt.Length && quote != null && !quoteEnd) throw new ArgumentException($"Quoted string is not terminated: {nbt}.");
 
             var raw = sb.ToString();
-            if (quote != null) {
+            if (raw.Length == 0) {
+                throw new ArgumentException($"Expected primitive nbt value at {pos}: {nbt}");
+            } else if (quote != null) {
                 return new NbtPrimitive<string>(raw);
             } else if (bool.TryParse(raw, out bool boolValue)) {
                 return new NbtPrimitive<bool>(boolValue);
