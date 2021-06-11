@@ -26,40 +26,28 @@ namespace Bertie.SNBT.Parser.Parsers {
                 return new NbtArray<NbtTag>();
             }
 
-            //Parse first value, check if separator is ; and create the correct type of array.
-            var nbtValue = NbtTagParser.Parse(nbt, ref pos);
-            if (pos == nbt.Length) throw new ArgumentException("Array never ends.");
-            var separator = nbt[pos];
-            pos++;
-            if (separator == ';') {
-                nbtValue.TryAs<NbtPrimitive<string>>(out var nbtStringValue);
-                var stringValue = nbtStringValue?.ValueAs<string>();
-                if (stringValue == "B") return CreateArray<NbtPrimitive<sbyte>>(nbt, ref pos);
-                else if (stringValue == "I") return CreateArray<NbtPrimitive<int>>(nbt, ref pos);
-                else if (stringValue == "L") return CreateArray<NbtPrimitive<long>>(nbt, ref pos);
+            //Check ahead if semicolon is found and pick correct array type.
+            if (pos + 1 < nbt.Length && nbt[pos + 1] == ';') {
+                var type = nbt[pos];
+                pos += 2;
+                if (type == 'B') return CreateArray<NbtPrimitive<sbyte>>(nbt, ref pos);
+                else if (type == 'I') return CreateArray<NbtPrimitive<int>>(nbt, ref pos);
+                else if (type == 'L') return CreateArray<NbtPrimitive<long>>(nbt, ref pos);
                 else throw new ArgumentException($"Array of unknown type at {pos}: {nbt}");
-            } else if (separator == ',') {
-                return CreateArray<NbtTag>(nbt, ref pos, nbtValue);
-            } else if (separator == ']') {
-                var result = new NbtArray<NbtTag>();
-                result.Add(nbtValue);
-                return result;
             } else {
-                throw new ArgumentException($"Array contains unknown separator at {pos}: {nbt}");
+                return CreateArray<NbtTag>(nbt, ref pos);
             }
         }
 
         /// <summary>
-        /// Creates array from nbt, where pos is at the start of the second element (possibly prefixed by whitespace).
+        /// Creates array from nbt, where pos is at the start of the first element (possibly prefixed by whitespace).
         /// </summary>
         /// <typeparam name="T">The type of array to create</typeparam>
         /// <param name="nbt">The nbt to parse</param>
         /// <param name="pos">The pos located after the first item.</param>
-        /// <param name="first">The first item to add to the array if necessary.</param>
         /// <returns>Returns a filled array.</returns>
-        private NbtArray CreateArray<T>(string nbt, ref int pos, T first = null) where T : NbtTag {
+        private NbtArray CreateArray<T>(string nbt, ref int pos) where T : NbtTag {
             var result = new NbtArray<T>();
-            if (first != null) result.Add(first);
             SkipWhitespace(nbt, ref pos);
             if (pos >= nbt.Length) throw new ArgumentException("Array never ends.");
             if (nbt[pos] == ']') {

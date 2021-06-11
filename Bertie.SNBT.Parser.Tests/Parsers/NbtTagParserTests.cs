@@ -27,5 +27,12 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var result = parser.Parse("352.09d").As<NbtPrimitive>();
             Assert.Equal(352.09, result.ValueAs<double>());
         }
+        [Fact]
+        public void CompoundResultsInCompound() {
+            var parser = new NbtTagParser();
+            var result = parser.Parse("{key: value}").As<NbtCompound>();
+            Assert.Equal(1, result.Count);
+            Assert.Equal("value", result.ValueAs<string>("key"));
+        }
     }
 }
