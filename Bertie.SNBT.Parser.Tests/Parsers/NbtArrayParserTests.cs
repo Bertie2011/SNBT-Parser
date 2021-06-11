@@ -168,8 +168,5 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             Assert.True(array.TryItemAs<NbtPrimitive<long>>(3, out var item3) && item3.ValueEquals(0));
             Assert.Equal(nbt.Length - 3, pos);
         }
-#warning Add array iteration methods
-#warning add Array test
-#warning add Array detection to NbtTag and possibly move type checks.
     }
 }

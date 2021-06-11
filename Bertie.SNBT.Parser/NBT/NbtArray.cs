@@ -51,6 +51,8 @@ namespace Bertie.SNBT.Parser.NBT {
         /// <exception cref="ArgumentOutOfRangeException">Throws if index is out of range.</exception>
         public abstract bool TryItemAs<R>(int index, out R result) where R : NbtTag;
 
+        public abstract IEnumerable<R> ItemsAs<R>() where R : NbtTag;
+
         /// <summary>
         /// Checks if the array contains a <see cref="NbtPrimitive"/> with a value that after possible conversion matches the specified value.
         /// </summary>
@@ -68,17 +70,6 @@ namespace Bertie.SNBT.Parser.NBT {
         public abstract int IndexOfValue<V>(V value);
 
         /// <summary>
-        /// Checks if the item at the index is a <see cref="NbtPrimitive"/> with internal type <typeparamref name="R"/>.
-        /// </summary>
-        /// <typeparam name="R">The value type to check for.</typeparam>
-        /// <param name="index">The index of the value to check.</param>
-        /// <returns>Returns true if the item is a <see cref="NbtPrimitive"/> with internal type <typeparamref name="R"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if index is out of range.</exception>
-        public bool ValueIs<R>(int index) {
-            return ItemIs<NbtPrimitive<R>>(index);
-        }
-
-        /// <summary>
         /// Returns the value of the <see cref="NbtPrimitive"/> at the specified index as <typeparamref name="R"/>.
         /// </summary>
         /// <typeparam name="R">The type to return the value as.</typeparam>
@@ -87,21 +78,22 @@ namespace Bertie.SNBT.Parser.NBT {
         /// <exception cref="ArgumentOutOfRangeException">Throws if index is out of range.</exception>
         /// <exception cref="InvalidCastException">Throws if the item at the specified index is not an <see cref="NbtPrimitive"/> or the value is not <typeparamref name="R"/>.</exception>
         public R ValueAs<R>(int index) {
-            return ItemAs<NbtPrimitive<R>>(index).ValueAs<R>();
+            return ItemAs<NbtPrimitive>(index).ValueAs<R>();
         }
 
         /// <summary>
-        /// Checks if the value of the <see cref="NbtPrimitive"/> at the specified index is <typeparamref name="R"/> and if so, returns it.
+        /// Checks if the value of the <see cref="NbtPrimitive"/> at the specified index can be returned as <typeparamref name="R"/> and if so, returns it.
         /// </summary>
-        /// <typeparam name="R">The type to return the tag as.</typeparam>
+        /// <typeparam name="R">The type to return the value as.</typeparam>
         /// <param name="index">The index of the item to return.</param>
-        /// <param name="result">If possible, will contain the item as <typeparamref name="R"/></param>
+        /// <param name="result">If possible, will contain the value of the the item as <typeparamref name="R"/></param>
         /// <returns>Returns true if the item is a <see cref="NbtPrimitive"/> and the value could be returned as <typeparamref name="R"/></returns>
         /// <exception cref="ArgumentOutOfRangeException">Throws if index is out of range.</exception>
         public bool TryValueAs<R>(int index, out R result) {
             result = default;
-            return TryItemAs<NbtPrimitive<R>>(index, out var primitive) && primitive.TryValueAs(out result);
+            return TryItemAs<NbtPrimitive>(index, out var primitive) && primitive.TryValueAs(out result);
         }
+        public abstract IEnumerable<R> ValuesAs<R>();
     }
 
     public class NbtArray<T> : NbtArray where T : NbtTag {
@@ -159,6 +151,16 @@ namespace Bertie.SNBT.Parser.NBT {
 
         public override bool TryItemAs<R>(int index, out R result) {
             return Values[index].TryAs(out result);
+        }
+
+        public override IEnumerable<R> ItemsAs<R>() {
+            return Values.Select(v => v.As<R>()).ToList();
+        }
+        public override IEnumerable<R> ValuesAs<R>() {
+            return Values.Select(v => {
+                var primitive = v.As<NbtPrimitive>();
+                return primitive.ValueAs<R>();
+            }).ToList();
         }
     }
 }

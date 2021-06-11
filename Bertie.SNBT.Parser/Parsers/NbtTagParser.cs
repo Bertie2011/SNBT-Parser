@@ -4,7 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Bertie.SNBT.Parser.Parsers {
-    public class NbtParser : StringParser<NbtTag> {
+    public class NbtTagParser : StringParser<NbtTag> {
+        private NbtPrimitiveParser PrimitiveParser { get; } = new NbtPrimitiveParser();
+        private NbtArrayParser ArrayParser { get; }
+
+        public NbtTagParser() {
+            ArrayParser = new NbtArrayParser(this);
+        }
+
         /// <summary>
         /// Parses any nbt and returns the appropriate tag.
         /// </summary>
@@ -13,7 +20,10 @@ namespace Bertie.SNBT.Parser.Parsers {
         /// <returns>Returns the parsed tag.</returns>
         public override NbtTag Parse(string nbt, ref int pos) {
             SkipWhitespace(nbt, ref pos);
-            var result = new NbtPrimitiveParser().Parse(nbt, ref pos);
+            if (pos >= nbt.Length) throw new ArgumentException($"Expected tag at {pos}: {nbt}");
+            NbtTag result;
+            if (nbt[pos] == '[') result = ArrayParser.Parse(nbt, ref pos);
+            else result = PrimitiveParser.Parse(nbt, ref pos);
             SkipWhitespace(nbt, ref pos);
             return result;
         }

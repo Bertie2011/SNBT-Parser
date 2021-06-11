@@ -5,7 +5,11 @@ using System.Text;
 
 namespace Bertie.SNBT.Parser.Parsers {
     public class NbtArrayParser : StringParser<NbtArray> {
-        private NbtParser NbtParser { get; } = new NbtParser();
+        private NbtTagParser NbtTagParser { get; }
+
+        public NbtArrayParser(NbtTagParser nbtTagParser = null) {
+            NbtTagParser = nbtTagParser ?? new NbtTagParser();
+        }
 
         public override NbtArray Parse(string nbt, ref int pos) {
             //Before array
@@ -23,7 +27,7 @@ namespace Bertie.SNBT.Parser.Parsers {
             }
 
             //Parse first value, check if separator is ; and create the correct type of array.
-            var nbtValue = NbtParser.Parse(nbt, ref pos);
+            var nbtValue = NbtTagParser.Parse(nbt, ref pos);
             if (pos == nbt.Length) throw new ArgumentException("Array never ends.");
             var separator = nbt[pos];
             pos++;
@@ -64,7 +68,7 @@ namespace Bertie.SNBT.Parser.Parsers {
             }
             while (true) {
                 //Parse element and skip whitespace after.
-                var value = NbtParser.Parse(nbt, ref pos);
+                var value = NbtTagParser.Parse(nbt, ref pos);
                 if (value.TryAs<T>(out var typedValue)) {
                     result.Add(typedValue);
                 } else {
