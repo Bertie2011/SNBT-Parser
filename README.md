@@ -13,7 +13,7 @@ The `NbtTag` is the base class for all other tag types. It contains several usef
 ```C#
 NbtTag tag;
 tag.Is<NbtPrimitive>(); //Returns true if tag is the given type.
-tag.As<NbtCompound>(); //Returns the tag as the given type.
+tag.As<NbtCompound>(); //Returns the tag as the given type or throws an exception if the tag could not be returned as the given type.
 tag.TryAs(out NbtCompound compound) //Returns true if tag is the given type and outputs as the given type if so.
 tag.TryAs<NbtCompound>(out var compound) //Both the generic parameter and the out variable type can infer types from each other, you only have to specify one.
 ```
@@ -56,7 +56,7 @@ The following table describes the available value types:
 The `NbtPrimitive` does not contain a `ValueIs` method, since most conversions have to be done in order to know if it was possible. To keep code efficient, the `TryValueAs` method is enforced instead. Example:
 ```C#
 //Not possible
-if (primitive.ValueIs<string>()) DoSomething(primitive.ValueAs<string>());
+//if (primitive.ValueIs<string>()) DoSomething(primitive.ValueAs<string>());
 //Correct way
 if (primitive.TryValueAs(out string value)) DoSomething(value);
 //If you are 100% sure you won't need the value.
