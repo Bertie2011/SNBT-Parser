@@ -23,7 +23,7 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[   ]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtTag>>(array);
+            Assert.IsType<NbtArray>(array);
             Assert.Equal(0, array.Count);
             Assert.Equal(nbt.Length - 3, pos);
         }
@@ -33,9 +33,9 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[ asdfasf]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtTag>>(array);
+            Assert.IsType<NbtArray>(array);
             Assert.Equal(1, array.Count);
-            Assert.True(array.TryItemAs(0, out NbtPrimitive item) && item.ValueEquals("asdfasf"));
+            Assert.True(array.ItemsAs<NbtPrimitive>()[0].ValueEquals("asdfasf"));
             Assert.Equal(nbt.Length - 3, pos);
         }
         [Fact]
@@ -54,7 +54,7 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[B;]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtPrimitive<sbyte>>>(array);
+            Assert.IsType<NbtArray>(array);
             Assert.Equal(0, array.Count);
             Assert.Equal(nbt.Length - 3, pos);
         }
@@ -64,7 +64,7 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[I;   ]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtPrimitive<int>>>(array);
+            Assert.IsType<NbtArray>(array);
             Assert.Equal(0, array.Count);
             Assert.Equal(nbt.Length - 3, pos);
         }
@@ -74,7 +74,7 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[  L;]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtPrimitive<long>>>(array);
+            Assert.IsType<NbtArray>(array);
             Assert.Equal(0, array.Count);
             Assert.Equal(nbt.Length - 3, pos);
         }
@@ -99,26 +99,18 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             Assert.Throws<ArgumentException>(() => parser.Parse("[B;125b#"));
         }
         [Fact]
-        public void BadItemInBArrayResultsInException() {
-            var parser = new NbtArrayParser();
-            Assert.Throws<ArgumentException>(() => parser.Parse("[B;125"));
-        }
-        [Fact]
         public void FilledArrayResultsInNbtTagArray() {
             var parser = new NbtArrayParser();
             var pos = 0;
-            var nbt = "[125, 25b   ,   99bx  , true  , 4.3d, 512.5f, heythere, \"Hello World!]\"]xxx";
+            var nbt = "[lkajsdf, \"#$%$#@\", heythere, \"Hello World!]\"]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtTag>>(array);
-            Assert.Equal(8, array.Count);
-            Assert.True(array.TryItemAs<NbtPrimitive<int>>(0, out var item0) && item0.ValueEquals(125));
-            Assert.True(array.TryItemAs<NbtPrimitive<sbyte>>(1, out var item1) && item1.ValueEquals((sbyte)25));
-            Assert.True(array.TryItemAs<NbtPrimitive<string>>(2, out var item2) && item2.ValueEquals("99bx"));
-            Assert.True(array.TryItemAs<NbtPrimitive<bool>>(3, out var item3) && item3.ValueEquals(true));
-            Assert.True(array.TryItemAs<NbtPrimitive<double>>(4, out var item4) && item4.ValueEquals(4.3));
-            Assert.True(array.TryItemAs<NbtPrimitive<float>>(5, out var item5) && item5.ValueEquals(512.5f));
-            Assert.True(array.TryItemAs<NbtPrimitive<string>>(6, out var item6) && item6.ValueEquals("heythere"));
-            Assert.True(array.TryItemAs<NbtPrimitive<string>>(7, out var item7) && item7.ValueEquals("Hello World!]"));
+            Assert.IsType<NbtArray>(array);
+            Assert.True(array.TryValuesAs<string>(out var stringArray));
+            Assert.Equal(4, array.Count);
+            Assert.Equal("lkajsdf", stringArray[0]);
+            Assert.Equal("#$%$#@", stringArray[1]);
+            Assert.Equal("heythere", stringArray[2]);
+            Assert.Equal("Hello World!]", stringArray[3]);
             Assert.Equal(nbt.Length - 3, pos);
         }
         [Fact]
@@ -132,12 +124,13 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[B; 19b, -42b, 100b, 0b]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtPrimitive<sbyte>>>(array);
+            Assert.IsType<NbtArray>(array);
+            var byteArray = array.ValuesAs<sbyte>();
             Assert.Equal(4, array.Count);
-            Assert.True(array.TryItemAs<NbtPrimitive<sbyte>>(0, out var item0) && item0.ValueEquals(19));
-            Assert.True(array.TryItemAs<NbtPrimitive<sbyte>>(1, out var item1) && item1.ValueEquals(-42));
-            Assert.True(array.TryItemAs<NbtPrimitive<sbyte>>(2, out var item2) && item2.ValueEquals(100));
-            Assert.True(array.TryItemAs<NbtPrimitive<sbyte>>(3, out var item3) && item3.ValueEquals(0));
+            Assert.Equal(19, byteArray[0]);
+            Assert.Equal(-42, byteArray[1]);
+            Assert.Equal(100, byteArray[2]);
+            Assert.Equal(0, byteArray[3]);
             Assert.Equal(nbt.Length - 3, pos);
         }
         [Fact]
@@ -146,12 +139,13 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[I; 19, -42, 100, 0]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtPrimitive<int>>>(array);
+            Assert.IsType<NbtArray>(array);
+            var intArray = array.ValuesAs<int>();
             Assert.Equal(4, array.Count);
-            Assert.True(array.TryItemAs<NbtPrimitive<int>>(0, out var item0) && item0.ValueEquals(19));
-            Assert.True(array.TryItemAs<NbtPrimitive<int>>(1, out var item1) && item1.ValueEquals(-42));
-            Assert.True(array.TryItemAs<NbtPrimitive<int>>(2, out var item2) && item2.ValueEquals(100));
-            Assert.True(array.TryItemAs<NbtPrimitive<int>>(3, out var item3) && item3.ValueEquals(0));
+            Assert.Equal(19, intArray[0]);
+            Assert.Equal(-42, intArray[1]);
+            Assert.Equal(100, intArray[2]);
+            Assert.Equal(0, intArray[3]);
             Assert.Equal(nbt.Length - 3, pos);
         }
         [Fact]
@@ -160,12 +154,13 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             var pos = 0;
             var nbt = "[L; 19l, -42l, 100l, 0l]xxx";
             var array = parser.Parse(nbt, ref pos);
-            Assert.IsType<NbtArray<NbtPrimitive<long>>>(array);
+            Assert.IsType<NbtArray>(array);
+            var longArray = array.ValuesAs<long>();
             Assert.Equal(4, array.Count);
-            Assert.True(array.TryItemAs<NbtPrimitive<long>>(0, out var item0) && item0.ValueEquals(19));
-            Assert.True(array.TryItemAs<NbtPrimitive<long>>(1, out var item1) && item1.ValueEquals(-42));
-            Assert.True(array.TryItemAs<NbtPrimitive<long>>(2, out var item2) && item2.ValueEquals(100));
-            Assert.True(array.TryItemAs<NbtPrimitive<long>>(3, out var item3) && item3.ValueEquals(0));
+            Assert.Equal(19, longArray[0]);
+            Assert.Equal(-42, longArray[1]);
+            Assert.Equal(100, longArray[2]);
+            Assert.Equal(0, longArray[3]);
             Assert.Equal(nbt.Length - 3, pos);
         }
     }

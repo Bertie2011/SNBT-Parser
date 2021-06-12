@@ -23,31 +23,31 @@ namespace Bertie.SNBT.Parser.Parsers {
 
             if (nbt[pos] == ']') {
                 pos++;
-                return new NbtArray<NbtTag>();
+                return new NbtArray();
             }
 
             //Check ahead if semicolon is found and pick correct array type.
             if (pos + 1 < nbt.Length && nbt[pos + 1] == ';') {
                 var type = nbt[pos];
                 pos += 2;
-                if (type == 'B') return CreateArray<NbtPrimitive<sbyte>>(nbt, ref pos);
-                else if (type == 'I') return CreateArray<NbtPrimitive<int>>(nbt, ref pos);
-                else if (type == 'L') return CreateArray<NbtPrimitive<long>>(nbt, ref pos);
+                if (type == 'B') return CreateArray(NbtArray.ArrayType.Byte, nbt, ref pos);
+                else if (type == 'I') return CreateArray(NbtArray.ArrayType.Integer, nbt, ref pos);
+                else if (type == 'L') return CreateArray(NbtArray.ArrayType.Long, nbt, ref pos);
                 else throw new ArgumentException($"Array of unknown type at {pos}: {nbt}");
             } else {
-                return CreateArray<NbtTag>(nbt, ref pos);
+                return CreateArray(NbtArray.ArrayType.None, nbt, ref pos);
             }
         }
 
         /// <summary>
         /// Creates array from nbt, where pos is at the start of the first element (possibly prefixed by whitespace).
         /// </summary>
-        /// <typeparam name="T">The type of array to create</typeparam>
+        /// <param name="type">The type of array to create</param>
         /// <param name="nbt">The nbt to parse</param>
         /// <param name="pos">The pos located after the first item.</param>
         /// <returns>Returns a filled array.</returns>
-        private NbtArray CreateArray<T>(string nbt, ref int pos) where T : NbtTag {
-            var result = new NbtArray<T>();
+        private NbtArray CreateArray(NbtArray.ArrayType type, string nbt, ref int pos) {
+            var result = new NbtArray(type);
             SkipWhitespace(nbt, ref pos);
             if (pos >= nbt.Length) throw new ArgumentException("Array never ends.");
             if (nbt[pos] == ']') {
@@ -57,11 +57,7 @@ namespace Bertie.SNBT.Parser.Parsers {
             while (true) {
                 //Parse element and skip whitespace after.
                 var value = NbtTagParser.Parse(nbt, ref pos);
-                if (value.TryAs<T>(out var typedValue)) {
-                    result.Add(typedValue);
-                } else {
-                    throw new ArgumentException($"Value does not fit in array type {typeof(T).Name} at {pos}: {nbt}");
-                }
+                result.Add(value);
                 SkipWhitespace(nbt, ref pos);
                 if (pos == nbt.Length) throw new ArgumentException("Array never ends.");
 

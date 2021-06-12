@@ -143,7 +143,7 @@ namespace Bertie.SNBT.Parser.NBT {
         }
 
         /// <summary>
-        /// Returns all items as <typeparamref name="R"/>.
+        /// Returns all items as <typeparamref name="R"/>. This method is expensive, try to reuse the result of this method as much as possible.
         /// </summary>
         /// <typeparam name="R">The type to return the items as.</typeparam>
         /// <returns>Returns all items as <typeparamref name="R"/>.</returns>
@@ -153,7 +153,7 @@ namespace Bertie.SNBT.Parser.NBT {
         }
 
         /// <summary>
-        /// Retrieves all items as <see cref="NbtPrimitive"/> and returns their values as <typeparamref name="R"/>.
+        /// Retrieves all items as <see cref="NbtPrimitive"/> and returns their values as <typeparamref name="R"/>. This method is expensive, try to reuse the result of this method as much as possible.
         /// </summary>
         /// <typeparam name="R">The type to return the value of the items as.</typeparam>
         /// <returns>Returns all values as <typeparamref name="R"/>.</returns>

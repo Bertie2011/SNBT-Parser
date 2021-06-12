@@ -93,13 +93,13 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
         [Fact]
         public void ArrayValueCompoundResultsInCompound() {
             var parser = new NbtCompoundParser();
-            var nbt = "   {test: [ 20.0d, true , \"  abc  \"]}xxx";
+            var nbt = "   {test: [ 20.0d, 542.5d , 897.234d]}xxx";
             var pos = 0;
-            var result = parser.Parse(nbt, ref pos).As<NbtCompound>().ItemAs<NbtArray>("test");
+            var result = parser.Parse(nbt, ref pos).As<NbtCompound>().ItemAs<NbtArray>("test").ValuesAs<double>();
             Assert.Equal(3, result.Count);
-            Assert.Equal(20.0, result.ValueAs<double>(0));
-            Assert.True(result.ValueAs<bool>(1));
-            Assert.Equal("  abc  ", result.ValueAs<string>(2));
+            Assert.Equal(20.0, result[0]);
+            Assert.Equal(542.5, result[1]);
+            Assert.Equal(897.234, result[2]);
             Assert.Equal(nbt.Length - 3, pos);
         }
     }
