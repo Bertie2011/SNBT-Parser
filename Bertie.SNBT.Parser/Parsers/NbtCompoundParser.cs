@@ -58,9 +58,7 @@ namespace Bertie.SNBT.Parser.Parsers {
 
             return result;
         }
-        //TODO: add to NbtTagParser
         //TODO: add NbtCompound tests
         //TODO: add Readme
-        //TODO: Add docs to NbtCompound
     }
 }

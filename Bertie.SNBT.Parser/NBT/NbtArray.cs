@@ -51,6 +51,12 @@ namespace Bertie.SNBT.Parser.NBT {
         /// <exception cref="ArgumentOutOfRangeException">Throws if index is out of range.</exception>
         public abstract bool TryItemAs<R>(int index, out R result) where R : NbtTag;
 
+        /// <summary>
+        /// Returns all items as <typeparamref name="R"/>.
+        /// </summary>
+        /// <typeparam name="R">The type to return the items as.</typeparam>
+        /// <returns>Returns all items as <typeparamref name="R"/>.</returns>
+        /// <exception cref="InvalidCastException">Thrown if one of the items cannot be returned as <typeparamref name="R"/></exception>
         public abstract IEnumerable<R> ItemsAs<R>() where R : NbtTag;
 
         /// <summary>
@@ -93,6 +99,13 @@ namespace Bertie.SNBT.Parser.NBT {
             result = default;
             return TryItemAs<NbtPrimitive>(index, out var primitive) && primitive.TryValueAs(out result);
         }
+
+        /// <summary>
+        /// Retrieves all items as <see cref="NbtPrimitive"/> and returns their values as <typeparamref name="R"/>.
+        /// </summary>
+        /// <typeparam name="R">The type to return the value of the items as.</typeparam>
+        /// <returns>Returns all values as <typeparamref name="R"/>.</returns>
+        /// <exception cref="InvalidCastException">Thrown if one of the items is not <see cref="NbtPrimitive"/> or the value cannot be returned as <typeparamref name="R"/></exception>
         public abstract IEnumerable<R> ValuesAs<R>();
     }
 
