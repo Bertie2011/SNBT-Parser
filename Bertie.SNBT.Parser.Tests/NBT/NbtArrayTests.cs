@@ -63,6 +63,12 @@ namespace Bertie.SNBT.Parser.Tests.NBT {
             Assert.False(array.ItemIs<NbtPrimitive<string>>(0));
             Assert.False(array.ItemIs<NbtArray>(0));
         }
+        [Fact]
+        public void ItemIsFailsForBadIndex() {
+            var array = new NbtArray<NbtPrimitive<int>>();
+            array.Add(new NbtPrimitive<int>(3));
+            Assert.Throws<ArgumentOutOfRangeException>(() => array.ItemIs<NbtPrimitive>(1));
+        }
 
         [Fact]
         public void ItemAsReturnsForMatchingClass() {
@@ -78,6 +84,12 @@ namespace Bertie.SNBT.Parser.Tests.NBT {
             array.Add(new NbtPrimitive<int>(3));
             Assert.Throws<InvalidCastException>(() => array.ItemAs<NbtPrimitive<string>>(0));
             Assert.Throws<InvalidCastException>(() => array.ItemAs<NbtArray>(0));
+        }
+        [Fact]
+        public void ItemAsFailsForBadIndex() {
+            var array = new NbtArray<NbtPrimitive<int>>();
+            array.Add(new NbtPrimitive<int>(3));
+            Assert.Throws<ArgumentOutOfRangeException>(() => array.ItemAs<NbtPrimitive>(1));
         }
         [Fact]
         public void TryItemAsReturnsTrueForMatchingClass() {
@@ -97,6 +109,12 @@ namespace Bertie.SNBT.Parser.Tests.NBT {
             array.Add(new NbtPrimitive<int>(3));
             Assert.False(array.TryItemAs<NbtPrimitive<string>>(0, out _));
             Assert.False(array.TryItemAs<NbtArray>(0, out _));
+        }
+        [Fact]
+        public void TryItemAsFailsForBadIndex() {
+            var array = new NbtArray<NbtPrimitive<int>>();
+            array.Add(new NbtPrimitive<int>(3));
+            Assert.Throws<ArgumentOutOfRangeException>(() => array.TryItemAs<NbtPrimitive>(1, out _));
         }
 
         [Fact]

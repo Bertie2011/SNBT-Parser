@@ -55,6 +55,17 @@ namespace Bertie.SNBT.Parser.NBT {
         }
 
         /// <summary>
+        /// Checks if the item at the specified key is <typeparamref name="R"/>
+        /// </summary>
+        /// <typeparam name="R">The tag type to check.</typeparam>
+        /// <param name="key">The key associated with the item.</param>
+        /// <returns>Returns true if the item associated with the key is <typeparamref name="R"/></returns>
+        /// <exception cref="KeyNotFoundException">Thrown if the dictionary does not contain the key.</exception>
+        public bool ItemIs<R>(string key) where R : NbtTag {
+            return Items[key].Is<R>();
+        }
+
+        /// <summary>
         /// Returns the item at the specified key as <typeparamref name="R"/>
         /// </summary>
         /// <typeparam name="R">The tag type to return.</typeparam>
@@ -80,7 +91,7 @@ namespace Bertie.SNBT.Parser.NBT {
         public bool TryItemAs<R>(string key, out R value, bool requireKey = false, bool requireType = false) where R : NbtTag {
             value = default;
             var hasValue = Items.TryGetValue(key, out var tag);
-            var hasType = hasValue ? false : tag.TryAs(out value);
+            var hasType = hasValue ? tag.TryAs(out value) : false;
             if (!hasValue && requireKey) {
                 throw new KeyNotFoundException($"Key {key} not found in compound.");
             } else if (!hasType && requireType) {

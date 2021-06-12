@@ -34,5 +34,11 @@ namespace Bertie.SNBT.Parser.Tests.Parsers {
             Assert.Equal(1, result.Count);
             Assert.Equal("value", result.ValueAs<string>("key"));
         }
+        [Fact]
+        public void ComplexNbtGetsParsedCorrectly() {
+            var parser = new NbtTagParser();
+            var result = parser.Parse("{compound:{\"name\":hello,value:2.43d, array :[ {value: 34b, value2: 12}, {Count:14s, Time:9999L }, {Motion:.5f}, {B:[B;34b],I:[I;645],L:[L;358L]} ]}, \"@$#()\": true}XXXXX").As<NbtCompound>();
+            //TODO: Check complex structure
+        }
     }
 }

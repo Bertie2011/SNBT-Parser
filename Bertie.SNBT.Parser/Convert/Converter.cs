@@ -90,7 +90,7 @@ namespace Bertie.SNBT.Parser.Convert {
         public bool TryConvert<R>(object value, out R result) {
             object genericResult = null;
             var boolReturn = Registry.TryGetValue(value.GetType(), out var resultMap) && resultMap.TryGetValue(typeof(R), out var rule) && rule.TryConvertGeneric(value, out genericResult);
-            result = (R)genericResult;
+            result = boolReturn ? (R)genericResult : default;
             return boolReturn;
         }
     }
