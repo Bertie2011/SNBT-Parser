@@ -109,10 +109,10 @@ namespace Bertie.SNBT.Parser.NBT {
         }
 
         /// <summary>
-        /// Checks whether this array contains (or if empty, can contain) items of type <typeparamref name="T"/>.
+        /// Checks whether the items that this array contains (or can contain) can be returned as <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to check.</typeparam>
-        /// <returns>Returns true if this array contains (or if empty, can contain) items of type <typeparamref name="T"/>.</returns>
+        /// <returns>Returns true if the items that this array contains (or can contain) can be returned as <typeparamref name="T"/>.</returns>
         public bool ItemsAre<T>() where T : NbtTag {
             return ItemsAre(typeof(T));
         }
