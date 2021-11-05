@@ -41,7 +41,7 @@ NbtPrimitive primitive = new NbtTagParser().Parse("1b").As<NbtPrimitive>();
 int value1 = primitive.ValueAs<int>(); //1
 sbyte value2 = primitive.ValueAs<sbyte>(); //1
 bool value3 = primitive.ValueAs<bool>(); //true
-string value4 = primitive.ValueAs<bool>(); //EXCEPTION THROWN!
+string value4 = primitive.ValueAs<string>(); //EXCEPTION THROWN!
 ```
 The following table describes the available value types:
 |SNBT Type|C# Type|
