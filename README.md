@@ -44,30 +44,24 @@ bool value3 = primitive.ValueAs<bool>(); //true
 string value4 = primitive.ValueAs<string>(); //EXCEPTION THROWN!
 ```
 The following table describes the available value types:
-|SNBT Type|C# Type|
-|---|---|
-|`bool`|`bool`|
-|`byte`|**`sbyte`** :warning:|
-|`short`|`short`|
-|`int`|`int`|
-|`long`|`long`|
-|`float`|`float`|
-|`double`|`double`|
-|`string`|`string`|
+|SNBT Type|`bool`|`byte`|`short`|`int`|`long`|`float`|`double`|`string`|
+|---|---|---|---|---|---|---|---|---|
+|C# Type|`bool`|**`sbyte`** :warning:|`short`|`int`|`long`|`float`|`double`|`string`|
 
-⚠️ It's more efficient to retrieve a value as the internal type, since it doesn't require conversion. Try to retrieve items as their intended type (according to Minecraft wiki pages), since it has the highest chance of matching the internal type and not requiring value conversion.  
-⚠️ JSON values are still strings. You can pass a retrieved JSON string to the [`System.Text.Json.JsonDocument`](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-use-dom-utf8jsonreader-utf8jsonwriter) class for further parsing.
+⚠️ Additional notes:
+* It's more efficient to retrieve a value as the internal type, since it doesn't require conversion. Try to retrieve items as their intended type (according to Minecraft wiki pages), since it has the highest chance of matching the internal type and not requiring value conversion.  
+* JSON values (like raw text found in signs/books/tellraw command) are `NbtPrimitives` of type `string`, not `NbtCompounds`. You can pass a retrieved JSON string to the [`System.Text.Json.JsonDocument.Parse(...)`](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-use-dom-utf8jsonreader-utf8jsonwriter) method for further parsing.
 
-The `NbtPrimitive` does not contain a `ValueIs` method, since most conversions have to be done in order to know if it was possible. To keep code efficient, the `TryValueAs` method is enforced instead. Example:
-```C#
-//Not possible
-//if (primitive.ValueIs<string>()) DoSomething(primitive.ValueAs<string>());
-//Correct way
-if (primitive.TryValueAs(out string value)) DoSomething(value);
-//If you are 100% sure you won't need the value.
-if (primitive.TryValueAs(out _)) DoSomething();
-```
-:warning: Other `NbtTag` types also won't contain any shortcut methods related to *only* checking if the value matches a type.
+* The `NbtPrimitive` does not contain a `ValueIs` method, since most conversions have to be done in order to know if it was possible. To keep code efficient, the `TryValueAs` method is enforced instead. Example:
+  ```C#
+  //Not possible
+  //if (primitive.ValueIs<string>()) DoSomething(primitive.ValueAs<string>());
+  //Correct way
+  if (primitive.TryValueAs(out string value)) DoSomething(value);
+  //If you are 100% sure you won't need the value.
+  if (primitive.TryValueAs(out _)) DoSomething();
+  ```
+  Other `NbtTag` types also won't contain any shortcut methods related to *only* checking if the value matches a type.
 
 ## NbtArray
 The `NbtArray` can contain multiple other `NbtTags`. An array can only contain items of the same type, that's why item retrieval and downcast methods are for all items at once. Besides some methods to edit the array, the following methods are available:
